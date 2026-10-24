@@ -1,3 +1,4 @@
+const { compare } = require("bcryptjs");
 const User = require("../models/user");
 
 exports.getLogin = (req, res) => {
@@ -15,9 +16,7 @@ exports.getSignup = (req, res) => {
 };
 
 exports.postSignup = (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
+  const { email, password, confirmPassword } = req.body;
 
   User.findOne({ email })
     .then((existingUser) => {
@@ -27,32 +26,49 @@ exports.postSignup = (req, res) => {
       }
 
       if (password === confirmPassword) {
-        const user = new User({ email, password, cart: { items: [] } });
-        return user.save();
+        User.addNewUser(email, password)
+          .then(() => {
+            console.log("Created new user!");
+            return res.redirect("/login");
+          })
+          .catch((err) => console.log(err));
       } else {
         console.log("Password don't match!");
         return res.redirect("/signup");
       }
     })
-    .then(() => res.redirect("/login"))
     .catch((err) => console.log(err));
 };
 
 exports.postLogin = (req, res) => {
-  User.findById("6ad53c3196ef1da92e2bedc4")
+  const { email, password } = req.body;
+
+  User.findOne({ email })
     .then((user) => {
       if (!user) {
-        return res.status(401).send("User not found");
+        console.log("User not found!");
+        return res.redirect("/login");
       }
-      req.session.isLoggedIn = true;
-      req.session.userId = user._id.toString();
-      req.session.save((err) => {
-        if (err) {
+      compare(password, user.password)
+        .then((doMatch) => {
+          if (!doMatch) {
+            console.log("Invalid Password!");
+            return res.redirect("/login");
+          }
+          req.session.isLoggedIn = true;
+          req.session.userId = user._id.toString();
+          return req.session.save((err) => {
+            if (err) {
+              console.log(err);
+              res.status(500).send("Internal server error!");
+            }
+            return res.redirect("/");
+          });
+        })
+        .catch((err) => {
           console.log(err);
-          res.status(500).send("Internal server error!");
-        }
-        res.redirect("/");
-      });
+          return res.redirect("/login");
+        });
     })
     .catch((err) => {
       console.error("Failed to load user:", err);
