@@ -3,7 +3,7 @@ const { port, mongodbUri, sessionSecret } = require("./config/env");
 const express = require("express");
 const path = require("path");
 
-const csrf = require("csurf");
+const csrf = require("@dr.pogodin/csurf").default;
 
 const session = require("express-session");
 const MongoDBSession = require("connect-mongodb-session")(session);

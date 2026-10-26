@@ -89,7 +89,7 @@ userSchema.methods.verifyPassword = function (password) {
   return compare(password, this.password);
 };
 
-userSchema.statics.addNewUser = function () {
+userSchema.methods.addNewUser = function () {
   return hash(this.password, 12).then((hashedPassword) => {
     this.password = hashedPassword;
     return this.save();
