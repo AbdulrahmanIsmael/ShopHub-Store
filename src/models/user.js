@@ -89,14 +89,10 @@ userSchema.methods.verifyPassword = function (password) {
   return compare(password, this.password);
 };
 
-userSchema.statics.addNewUser = function (email, password) {
-  return hash(password, 12).then((hashedPassword) => {
-    const user = new User({
-      email,
-      password: hashedPassword,
-      cart: { items: [] },
-    });
-    return user.save();
+userSchema.statics.addNewUser = function () {
+  return hash(this.password, 12).then((hashedPassword) => {
+    this.password = hashedPassword;
+    return this.save();
   });
 };
 

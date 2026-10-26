@@ -8,6 +8,7 @@ exports.getAddProductPage = (req, res) => {
     title: "Admin - Add Product",
     editing: false,
     product: {},
+    errorMessage: req.flash("error"),
   });
 };
 
@@ -54,6 +55,17 @@ exports.postEditProduct = (req, res) => {
     productDesc,
   } = req.body;
 
+  if (
+    !productName ||
+    !productQuantity ||
+    !productPrice ||
+    !productImage ||
+    !productDesc
+  ) {
+    req.flash("error", "All fields are required!");
+    return res.redirect("/admin/edit-product");
+  }
+
   Product.findByIdAndUpdate(
     productId,
     {
@@ -87,6 +99,17 @@ exports.postProducts = (req, res) => {
     productImage,
     productDesc,
   } = req.body;
+
+  if (
+    !productName ||
+    !productQuantity ||
+    !productPrice ||
+    !productImage ||
+    !productDesc
+  ) {
+    req.flash("error", "All fields are required!");
+    return res.redirect("/admin/add-product");
+  }
 
   const product = new Product({
     title: productName,

@@ -3,12 +3,14 @@ const User = require("../models/user");
 exports.getLogin = (req, res) => {
   res.render("auth/login", {
     title: "Login",
+    errorMessage: req.flash("error"),
   });
 };
 
 exports.getSignup = (req, res) => {
   res.render("auth/signup", {
     title: "Signup",
+    errorMessage: req.flash("error"),
   });
 };
 
@@ -18,19 +20,21 @@ exports.postSignup = (req, res) => {
   User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
-        console.log("User already exists with that email");
+        req.flash("error", "User already exists with that email");
         return res.redirect("/login");
       }
 
       if (password === confirmPassword) {
-        User.addNewUser(email, password)
+        const user = new User({ email, password, cart: { items: [] } });
+        user
+          .addNewUser()
           .then(() => {
             console.log("Created new user!");
             return res.redirect("/login");
           })
           .catch((err) => console.log(err));
       } else {
-        console.log("Password don't match!");
+        req.flash("error", "Password don't match!");
         return res.redirect("/signup");
       }
     })
@@ -43,12 +47,12 @@ exports.postLogin = (req, res) => {
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        console.log("User not found!");
+        req.flash("error", "User not found!");
         return res.redirect("/login");
       }
       return user.verifyPassword(password).then((doMatch) => {
         if (!doMatch) {
-          console.log("Invalid Password!");
+          req.flash("error", "Invalid Password!");
           return res.redirect("/login");
         }
         req.session.isLoggedIn = true;
@@ -61,6 +65,7 @@ exports.postLogin = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      req.flash("error", "Something went wrong!");
       res.redirect("/login");
     });
 };
