@@ -59,6 +59,7 @@
                   <span>$<%= orderTotal.toFixed(2) %></span>
                 </div>
                 <form action="/checkout" method="POST">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                   <input type="hidden" name="orderId" value="<%= order._id %>">
                   <button type="submit" class="btn btn-secondary">Checkout Order</button>
                 </form>
@@ -88,6 +89,7 @@
             <span>$<%= grandTotal.toFixed(2) %></span>
           </div>
           <form action="/checkout-all" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button type="submit" class="btn btn-primary checkout-all-btn">Checkout All Orders</button>
           </form>
         </div>

@@ -9,7 +9,6 @@ exports.getProductsPage = (req, res) => {
       res.render("shop/products-list.ejs", {
         title: "Products Page",
         products,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));
@@ -23,7 +22,6 @@ exports.getProductDetailsById = (req, res) => {
       res.render("shop/product-details.ejs", {
         title: product.title,
         product,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));

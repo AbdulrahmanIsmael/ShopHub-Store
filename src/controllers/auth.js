@@ -1,17 +1,14 @@
-const { compare } = require("bcryptjs");
 const User = require("../models/user");
 
 exports.getLogin = (req, res) => {
   res.render("auth/login", {
     title: "Login",
-    isAuth: req.session.isLoggedIn,
   });
 };
 
 exports.getSignup = (req, res) => {
   res.render("auth/signup", {
     title: "Signup",
-    isAuth: req.session.isLoggedIn,
   });
 };
 
@@ -49,30 +46,22 @@ exports.postLogin = (req, res) => {
         console.log("User not found!");
         return res.redirect("/login");
       }
-      compare(password, user.password)
-        .then((doMatch) => {
-          if (!doMatch) {
-            console.log("Invalid Password!");
-            return res.redirect("/login");
-          }
-          req.session.isLoggedIn = true;
-          req.session.userId = user._id.toString();
-          return req.session.save((err) => {
-            if (err) {
-              console.log(err);
-              res.status(500).send("Internal server error!");
-            }
-            return res.redirect("/");
-          });
-        })
-        .catch((err) => {
-          console.log(err);
+      return user.verifyPassword(password).then((doMatch) => {
+        if (!doMatch) {
+          console.log("Invalid Password!");
           return res.redirect("/login");
+        }
+        req.session.isLoggedIn = true;
+        req.session.userId = user._id.toString();
+        return req.session.save((err) => {
+          if (err) console.log(err);
+          res.redirect(err ? "/login" : "/");
         });
+      });
     })
     .catch((err) => {
-      console.error("Failed to load user:", err);
-      res.status(401).send(`<p style="color: red;">Error: ${err}</p>`);
+      console.log(err);
+      res.redirect("/login");
     });
 };
 

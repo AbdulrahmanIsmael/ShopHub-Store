@@ -49,6 +49,7 @@
                     <a href="/admin/edit-product/<%= product._id %>?edit=true" class="product-card__edit">Edit</a>
                     <!-- ! Change to submit button when adding deleting admin feature -->
                     <form action="/admin/delete-product/<%= product._id %>" method="POST">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                       <button type="submit" class="product-card__delete">Delete</button>
                     </form>
                   </div>

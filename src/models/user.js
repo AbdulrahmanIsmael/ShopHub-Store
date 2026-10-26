@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { hash } = require("bcryptjs");
+const { hash, compare } = require("bcryptjs");
 
 const userSchema = new Schema({
   email: {
@@ -83,6 +83,10 @@ userSchema.methods.clearCart = function () {
   return this.save()
     .then(() => console.log("Cart has been cleared"))
     .catch((err) => console.log(err));
+};
+
+userSchema.methods.verifyPassword = function (password) {
+  return compare(password, this.password);
 };
 
 userSchema.statics.addNewUser = function (email, password) {

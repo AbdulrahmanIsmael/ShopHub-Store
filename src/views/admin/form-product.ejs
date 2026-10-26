@@ -123,6 +123,8 @@
             <input type="hidden" name="productId" value="<%= product._id %>">
           <% } %>
 
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">
               <%= editing ? '' : "➕" %> <%= editing ? 'Update' : "Add" %>

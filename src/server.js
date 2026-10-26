@@ -2,7 +2,8 @@ const { port, mongodbUri, sessionSecret } = require("./config/env");
 
 const express = require("express");
 const path = require("path");
-const bodyParser = require("body-parser");
+
+const csrf = require("csurf");
 
 const session = require("express-session");
 const MongoDBSession = require("connect-mongodb-session")(session);
@@ -26,14 +27,16 @@ const store = new MongoDBSession({
   databaseName: "shop", // used in case db name not in the uri string
   collection: "sessions",
 });
+// getting csrf middleware for configuring csrf
+const csrfProtection = csrf();
 
 // EJS configuration
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Request body parsers
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 
@@ -46,6 +49,8 @@ app.use(
     store: store, // changing store from the default (memory) to the database using connect-mongodb-session package
   }),
 );
+// using csrf protection middleware
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   const userId = req.session.userId;
@@ -80,6 +85,12 @@ if (require.main !== module) {
   });
 }
 
+app.use((req, res, next) => {
+  res.locals.isAuth = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+
+  next();
+});
 // Routes
 app.use("/admin", adminRouter);
 app.use(productsRouter);

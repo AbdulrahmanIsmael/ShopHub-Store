@@ -68,6 +68,7 @@
                   <!-- ! Change type button to submit later when adding the cart feature -->
                   <% if (isAuth) { %>
                     <form action="/cart" method="POST" class="add-to-cart-btn">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                       <button type="submit" aria-label="Add to Cart">🛒</button>
                       <input type="hidden" name="productId" value="<%= product._id %>">
                     </form>
@@ -116,6 +117,7 @@
         </div>
         <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing! This functionality will be fully implemented soon.');">
           <input type="email" placeholder="Enter your email address" required />
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <button type="submit" class="btn btn-primary">Subscribe</button>
         </form>
       </div>

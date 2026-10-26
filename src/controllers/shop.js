@@ -10,7 +10,6 @@ exports.getHome = (req, res) => {
       res.render("shop/index", {
         title: "Shop",
         products,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));
@@ -31,7 +30,6 @@ exports.getCart = (req, res) => {
         title: "My Cart",
         products: products,
         totalPrice: totalPrice ?? 0,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));
@@ -46,7 +44,6 @@ exports.getOrders = (req, res) => {
       res.render("shop/orders", {
         title: "My Orders",
         orders,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));

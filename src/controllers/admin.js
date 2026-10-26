@@ -8,7 +8,6 @@ exports.getAddProductPage = (req, res) => {
     title: "Admin - Add Product",
     editing: false,
     product: {},
-    isAuth: req.session.isLoggedIn,
   });
 };
 
@@ -27,7 +26,6 @@ exports.getEditProductPage = (req, res) => {
         title: "Admin - Edit Product",
         editing: editQuery,
         product,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => err && handleError(res, err));
@@ -40,7 +38,6 @@ exports.getAdminProductsPage = (req, res) => {
       res.render("admin/products.ejs", {
         title: "Admin - Products",
         products,
-        isAuth: req.session.isLoggedIn,
       });
     })
     .catch((err) => handleError(res, err));

@@ -41,6 +41,7 @@
                 <button class="btn btn-secondary qty-btn" onclick="alert('This functionality will be worked on later!')">+</button>
               </div>
               <form action="/delete-from-cart" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button class="btn btn-danger delete-btn">Delete</button>
                 <input type="hidden" name="productId" value="<%= p._id %>">
               </form>
@@ -60,6 +61,7 @@
             <span>$<%= totalPrice %></span>
           </div>
           <form action="/orders" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button type="submit" class="btn btn-primary checkout-btn">Proceed to Order</button>
           </form>
         </div>
