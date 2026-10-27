@@ -226,6 +226,25 @@
   transform: translateY(0);
 }
 
+/* Form Footer (Forgot Password, etc.) */
+.auth-form-footer {
+  text-align: center;
+  margin-top: 1.25rem;
+}
+
+.auth-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.auth-link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
 /* ==========================================
    Responsive Design
    ========================================== */
