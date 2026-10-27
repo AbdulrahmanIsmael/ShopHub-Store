@@ -22,11 +22,13 @@ exports.getEditProductPage = (req, res) => {
   const productId = req.params.productId;
   Product.findById(productId)
     .then((product) => {
-      if (!product) return res.redirect("/");
+      if (!product || product.userId.toString() !== req.session.userId)
+        return res.redirect("/");
       res.render("admin/form-product.ejs", {
         title: "Admin - Edit Product",
         editing: editQuery,
         product,
+        errorMessage: req.flash("error"),
       });
     })
     .catch((err) => err && handleError(res, err));
@@ -34,7 +36,7 @@ exports.getEditProductPage = (req, res) => {
 
 // get the products admin page
 exports.getAdminProductsPage = (req, res) => {
-  Product.find()
+  Product.find({ userId: req.session.userId })
     .then((products) => {
       res.render("admin/products.ejs", {
         title: "Admin - Products",
@@ -65,28 +67,27 @@ exports.postEditProduct = (req, res) => {
     req.flash("error", "All fields are required!");
     return res.redirect("/admin/edit-product");
   }
-
-  Product.findByIdAndUpdate(
-    productId,
-    {
-      title: productName,
-      price: productPrice,
-      quantity: productQuantity,
-      imageUrl: productImage,
-      description: productDesc,
-    },
-    {
-      runValidators: true,
-    },
-  )
-    .then(() => res.redirect("/admin/products"))
+  Product.findById(productId)
+    .then((product) => {
+      if (!product || product.userId.toString() !== req.session.userId)
+        return res.redirect("/");
+      product.title = productName;
+      product.price = productPrice;
+      product.quantity = productQuantity;
+      product.imageUrl = productImage;
+      product.description = productDesc;
+      return product
+        .save()
+        .then(() => res.redirect("/admin/products"))
+        .catch((err) => console.log(err));
+    })
     .catch((err) => handleError(res, err));
 };
 
 exports.postDeleteProduct = (req, res) => {
   const productId = req.params.productId;
-  Product.findByIdAndDelete(productId)
-    .then(() => res.redirect("/products"))
+  Product.deleteOne({ _id: productId, userId: req.session.userId })
+    .then(() => res.redirect("/admin/products"))
     .catch((err) => err && handleError(res, err));
 };
 
