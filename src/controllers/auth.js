@@ -1,5 +1,6 @@
 const { sendgridApiKey, port } = require("../config/env");
 
+const { validationResult } = require("express-validator");
 const { randomBytes } = require("crypto");
 const { createTransport } = require("nodemailer");
 const { hash } = require("bcryptjs");
@@ -37,45 +38,50 @@ exports.getReset = (req, res) => {
 };
 
 exports.postSignup = (req, res) => {
-  const { email, password, confirmPassword } = req.body;
+  const errors = validationResult(req);
 
-  User.findOne({ email })
-    .then((existingUser) => {
-      if (existingUser) {
-        req.flash("error", "User already exists with that email");
-        return res.redirect("/login");
-      }
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      title: "Signup",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
 
-      if (password === confirmPassword) {
-        const user = new User({ email, password, cart: { items: [] } });
-        user
-          .addNewUser()
-          .then(() => {
-            console.log("Created new user!");
-            res.redirect("/login");
-            return transporter.sendMail({
-              to: email,
-              from: "abdulrahmanismael2023@gmail.com",
-              subject: "Welcome to ShopHub!",
-              html: "<h1>Hello and Welcome, you are signed up successfully!</h1>",
-            });
-          })
-          .catch((err) => console.log(err));
-      } else {
-        req.flash("error", "Password don't match!");
-        return res.redirect("/signup");
-      }
+  const user = new User({
+    email: req.body.email,
+    password: req.body.password,
+    cart: { items: [] },
+  });
+  user
+    .addNewUser()
+    .then(() => {
+      console.log("Created new user!");
+      res.redirect("/login");
+      return transporter.sendMail({
+        to: req.body.email,
+        from: "abdulrahmanismael2023@gmail.com",
+        subject: "Welcome to ShopHub!",
+        html: "<h1>Hello and Welcome, you are signed up successfully!</h1>",
+      });
     })
     .catch((err) => console.log(err));
 };
 
 exports.postLogin = (req, res) => {
-  const { email, password } = req.body;
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/login", {
+      title: "Login",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+
+  const { email, password } = req.body;
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "User not found!");
+        req.flash("error", "Invalid Email or password!");
         return res.redirect("/login");
       }
       return user.verifyPassword(password).then((doMatch) => {

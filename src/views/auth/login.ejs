@@ -21,7 +21,7 @@
             <p class="auth-card__subtitle">Please enter your credentials to continue</p>
           </div>
 
-          <form action="/login" method="POST" class="auth-form">
+          <form action="/login" method="POST" class="auth-form" novalidate>
             <!-- Error Message -->
             <% if (errorMessage && errorMessage.length > 0) { %>
               <div class="auth-error-alert" role="alert">
@@ -30,7 +30,7 @@
                   <line x1="12" y1="8" x2="12" y2="12"></line>
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
-                <span><%= errorMessage[0] %></span>
+                <span><%= Array.isArray(errorMessage) ? errorMessage[0] : errorMessage%></span>
               </div>
             <% } %>
 
