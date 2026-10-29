@@ -20,6 +20,11 @@ exports.getLogin = (req, res) => {
   res.render("auth/login", {
     title: "Login",
     errorMessage: req.flash("error"),
+    oldInputs: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -27,6 +32,12 @@ exports.getSignup = (req, res) => {
   res.render("auth/signup", {
     title: "Signup",
     errorMessage: req.flash("error"),
+    oldInput: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -38,18 +49,25 @@ exports.getReset = (req, res) => {
 };
 
 exports.postSignup = (req, res) => {
+  const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/signup", {
       title: "Signup",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email,
+        password,
+        confirmPassword,
+      },
+      validationErrors: errors.array().map((e) => e.path),
     });
   }
 
   const user = new User({
-    email: req.body.email,
-    password: req.body.password,
+    email: email,
+    password: password,
     cart: { items: [] },
   });
   user
@@ -58,7 +76,7 @@ exports.postSignup = (req, res) => {
       console.log("Created new user!");
       res.redirect("/login");
       return transporter.sendMail({
-        to: req.body.email,
+        to: email,
         from: "abdulrahmanismael2023@gmail.com",
         subject: "Welcome to ShopHub!",
         html: "<h1>Hello and Welcome, you are signed up successfully!</h1>",
@@ -68,26 +86,36 @@ exports.postSignup = (req, res) => {
 };
 
 exports.postLogin = (req, res) => {
+  const { email, password } = req.body;
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).render("auth/login", {
       title: "Login",
       errorMessage: errors.array()[0].msg,
+      oldInputs: { email, password },
+      validationErrors: errors.array().map((e) => e.path),
     });
   }
 
-  const { email, password } = req.body;
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        req.flash("error", "Invalid Email or password!");
-        return res.redirect("/login");
+        return res.status(422).render("auth/login", {
+          title: "Login",
+          errorMessage: "Invalid Email or password!",
+          oldInputs: { email, password },
+          validationErrors: ["email"],
+        });
       }
       return user.verifyPassword(password).then((doMatch) => {
         if (!doMatch) {
-          req.flash("error", "Invalid Password!");
-          return res.redirect("/login");
+          return res.status(422).render("auth/login", {
+            title: "Login",
+            errorMessage: "Invalid Password!",
+            oldInputs: { email, password },
+            validationErrors: ["password"],
+          });
         }
         req.session.isLoggedIn = true;
         req.session.userId = user._id.toString();

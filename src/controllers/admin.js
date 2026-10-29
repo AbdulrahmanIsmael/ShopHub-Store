@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 const Product = require("../models/product");
 
 const { handleError } = require("../utils/errorHandler");
@@ -9,6 +11,14 @@ exports.getAddProductPage = (req, res) => {
     editing: false,
     product: {},
     errorMessage: req.flash("error"),
+    oldInputs: {
+      productName: "",
+      productQuantity: "",
+      productPrice: "",
+      productImage: "",
+      productDesc: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -29,6 +39,14 @@ exports.getEditProductPage = (req, res) => {
         editing: editQuery,
         product,
         errorMessage: req.flash("error"),
+        oldInputs: {
+          productName: "",
+          productQuantity: "",
+          productPrice: "",
+          productImage: "",
+          productDesc: "",
+        },
+        validationErrors: [],
       });
     })
     .catch((err) => err && handleError(res, err));
@@ -57,16 +75,25 @@ exports.postEditProduct = (req, res) => {
     productDesc,
   } = req.body;
 
-  if (
-    !productName ||
-    !productQuantity ||
-    !productPrice ||
-    !productImage ||
-    !productDesc
-  ) {
-    req.flash("error", "All fields are required!");
-    return res.redirect("/admin/edit-product");
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/form-product.ejs", {
+      title: "Admin - Edit Product",
+      editing: true,
+      product: {
+        _id: productId,
+        title: productName,
+        price: productPrice,
+        quantity: productQuantity,
+        imageUrl: productImage,
+        description: productDesc,
+      },
+      oldInputs: {},
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array().map((e) => e.path),
+    });
   }
+
   Product.findById(productId)
     .then((product) => {
       if (!product || product.userId.toString() !== req.session.userId)
@@ -101,15 +128,22 @@ exports.postProducts = (req, res) => {
     productDesc,
   } = req.body;
 
-  if (
-    !productName ||
-    !productQuantity ||
-    !productPrice ||
-    !productImage ||
-    !productDesc
-  ) {
-    req.flash("error", "All fields are required!");
-    return res.redirect("/admin/add-product");
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/form-product.ejs", {
+      title: "Admin - Add Product",
+      editing: false,
+      product: {},
+      oldInputs: {
+        productName,
+        productQuantity,
+        productPrice,
+        productImage,
+        productDesc,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array().map((e) => e.path),
+    });
   }
 
   const product = new Product({

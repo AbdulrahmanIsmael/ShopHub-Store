@@ -47,10 +47,11 @@
                   type="email"
                   name="email"
                   id="email"
-                  class="form-input"
+                  class="form-input <%= validationErrors.includes('email') ? 'invalid' : '' %>"
                   placeholder="you@example.com"
                   required
                   autocomplete="email"
+                  value="<%= oldInputs.email %>"
                 />
               </div>
               <small class="form-help-text">Enter your registered email address</small>
@@ -69,9 +70,10 @@
                   type="password"
                   name="password"
                   id="password"
-                  class="form-input"
+                  class="form-input <%= validationErrors.includes('password') ? 'invalid' : '' %>"
                   placeholder="Enter your password"
                   required
+                  value="<%= oldInputs.password %>"
                   autocomplete="current-password"
                 />
               </div>

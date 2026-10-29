@@ -9,18 +9,13 @@ const productSchema = new Schema({
     type: Number,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
   quantity: {
     type: Number,
     required: true,
   },
-  imageUrl: {
-    type: String,
-    required: true,
-  },
+  description: String,
+  imageUrl: String,
+
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",

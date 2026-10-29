@@ -48,9 +48,10 @@
                   type="email"
                   name="email"
                   id="email"
-                  class="form-input"
+                  class="form-input <%= validationErrors.includes('email') ? 'invalid' : '' %>"
                   placeholder="you@example.com"
                   required
+                  value="<%= oldInput.email %>"
                   autocomplete="email"
                 />
               </div>
@@ -70,9 +71,10 @@
                   type="password"
                   name="password"
                   id="password"
-                  class="form-input"
+                  class="form-input <%= validationErrors.includes('password') ? 'invalid' : '' %>"
                   placeholder="Enter your password"
                   required
+                  value="<%= oldInput.password %>"
                   autocomplete="new-password"
                 />
               </div>
@@ -91,9 +93,10 @@
                   type="password"
                   name="confirmPassword"
                   id="confirmPassword"
-                  class="form-input"
+                  class="form-input <%= validationErrors.includes('confirmPassword') ? 'invalid' : '' %>"
                   placeholder="Confirm your password"
                   required
+                  value="<%= oldInput.confirmPassword %>"
                   autocomplete="new-password"
                 />
               </div>

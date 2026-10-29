@@ -29,7 +29,7 @@
                 <line x1="12" y1="8" x2="12" y2="12"></line>
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
               </svg>
-              <span><%= errorMessage[0] %></span>
+              <span><%= Array.isArray(errorMessage) ? errorMessage[0] : errorMessage %></span>
             </div>
           <% } %>
 
@@ -41,10 +41,10 @@
               type="text"
               name="productName"
               id="product-name"
-              class="form-input"
+              class="form-input <%= validationErrors.includes('productName') ? 'invalid' : '' %>"
               placeholder="e.g., Dell Latitude 3350"
               required
-              value="<%= editing && product && product.title ? product.title : ''  %>"
+              value="<%= editing && product && product.title ? product.title : oldInputs.productName  %>"
             />
             <small class="form-help-text"
               >Enter a descriptive name for your product</small
@@ -60,11 +60,11 @@
                 type="number"
                 name="productQuantity"
                 id="product-quantity"
-                class="form-input"
+                class="form-input <%= validationErrors.includes('productQuantity') ? 'invalid' : '' %>"
                 placeholder="100"
                 min="0"
                 required
-                value="<%= editing && product && product.quantity ? product.quantity : ''  %>"
+                value="<%= editing && product && product.quantity ? product.quantity : oldInputs.productQuantity  %>"
               />
             </div>
             <small class="form-help-text"
@@ -81,14 +81,14 @@
               <input
                 type="number"
                 min="0"
-                max="1000000"
+                max="10000000"
                 step="0.01"
                 name="productPrice"
                 id="product-price"
-                class="form-input"
+                class="form-input <%= validationErrors.includes('productPrice') ? 'invalid' : '' %>"
                 placeholder="150.00"
                 required
-                value="<%= editing && product && product.price ? product.price : ''  %>"
+                value="<%= editing && product && product.price ? product.price : oldInputs.productPrice  %>"
               />
             </div>
             <small class="form-help-text"
@@ -106,9 +106,8 @@
                 type="url"
                 name="productImage"
                 id="product-image"
-                class="form-input"
-                required
-                value="<%= editing && product && product.imageUrl ? product.imageUrl : ''  %>"
+                class="form-input <%= validationErrors.includes('productImage') ? 'invalid' : '' %>"
+                value="<%= editing && product && product.imageUrl ? product.imageUrl : oldInputs.productImage  %>"
               />
             </div>
             <% if(product && product.imageUrl) { %>
@@ -124,10 +123,9 @@
               <textarea
                 name="productDesc"
                 id="product-desc"
-                class="form-textarea"
+                class="form-textarea <%= validationErrors.includes('productDesc') ? 'invalid' : '' %>"
                 placeholder="Write some description for the product"
-                required
-              ><%= editing && product && product.description ? product.description : ''  %></textarea>
+              ><%= editing && product && product.description ? product.description : oldInputs.productDesc  %></textarea>
             </div>
           </div>
 
