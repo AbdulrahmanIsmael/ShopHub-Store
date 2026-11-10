@@ -1,10 +1,10 @@
-const Product = require("../models/product");
-const Order = require("../models/order");
+import Product from "../models/product.js";
+import Order from "../models/order.js";
 
-const { handleError } = require("../utils/errorHandler");
+import { handleError } from "../utils/errorHandler.js";
 
 // get the main page
-exports.getHome = (req, res) => {
+export const getHome = (req, res) => {
   Product.find()
     .then((products) => {
       res.render("shop/index", {
@@ -16,7 +16,7 @@ exports.getHome = (req, res) => {
 };
 
 // get the cart page
-exports.getCart = (req, res) => {
+export const getCart = (req, res) => {
   const user = req.user;
   user
     .getCart()
@@ -36,7 +36,7 @@ exports.getCart = (req, res) => {
 };
 
 // get the orders page
-exports.getOrders = (req, res) => {
+export const getOrders = (req, res) => {
   const userId = req.session.userId;
 
   Order.find({ userId })
@@ -50,7 +50,7 @@ exports.getOrders = (req, res) => {
 };
 
 // add product to cart
-exports.postCart = (req, res) => {
+export const postCart = (req, res) => {
   const user = req.user;
   const productId = req.body.productId;
 
@@ -60,7 +60,7 @@ exports.postCart = (req, res) => {
     .catch((err) => handleError(res, err));
 };
 
-exports.postRemoveFromCart = (req, res) => {
+export const postRemoveFromCart = (req, res) => {
   const user = req.user;
   user
     .removeItemFromCart(req.body.productId)
@@ -69,7 +69,7 @@ exports.postRemoveFromCart = (req, res) => {
 };
 
 // post new order
-exports.postOrder = (req, res) => {
+export const postOrder = (req, res) => {
   const user = req.user;
   user
     .populate("cart.items.productId")

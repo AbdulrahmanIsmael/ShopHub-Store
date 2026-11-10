@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const Product = require("./product");
+import Product from "./product.js";
 
 const orderSchema = new Schema({
   products: [
@@ -49,4 +49,4 @@ orderSchema.statics.createOrder = function (cartItems, userId) {
 
 const Order = model("Order", orderSchema);
 
-module.exports = Order;
+export default Order;

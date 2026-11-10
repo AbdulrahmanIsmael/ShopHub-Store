@@ -1,8 +1,6 @@
-function handleError(res, err = null) {
+export function handleError(res, err = null) {
   console.log(err);
   res.render("404.ejs", {
     title: "Page Not Found",
   });
 }
-
-module.exports.handleError = handleError;

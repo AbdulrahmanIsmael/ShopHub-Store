@@ -1,6 +1,6 @@
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
-const addProductValidator = [
+export const addProductValidator = [
   body("productName", "Please enter a valid Product Name!")
     .notEmpty()
     .isString()
@@ -15,5 +15,3 @@ const addProductValidator = [
     .isFloat()
     .trim(),
 ];
-
-module.exports = { addProductValidator };

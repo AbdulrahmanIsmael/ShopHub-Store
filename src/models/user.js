@@ -1,5 +1,5 @@
-const { Schema, model } = require("mongoose");
-const { hash, compare } = require("bcryptjs");
+import { Schema, model } from "mongoose";
+import { hash, compare } from "bcryptjs";
 
 const userSchema = new Schema({
   email: {
@@ -100,4 +100,4 @@ userSchema.methods.addNewUser = function () {
 
 const User = model("User", userSchema);
 
-module.exports = User;
+export default User;

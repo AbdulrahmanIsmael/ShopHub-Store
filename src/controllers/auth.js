@@ -1,11 +1,11 @@
-const { sendgridApiKey, port } = require("../config/env");
+import { sendgridApiKey, port } from "../config/env.js";
 
-const { validationResult } = require("express-validator");
-const { randomBytes } = require("crypto");
-const { createTransport } = require("nodemailer");
-const { hash } = require("bcryptjs");
+import { validationResult } from "express-validator";
+import { randomBytes } from "crypto";
+import { createTransport } from "nodemailer";
+import { hash } from "bcryptjs";
 
-const User = require("../models/user");
+import User from "../models/user.js";
 
 const transporter = createTransport({
   host: "smtp.sendgrid.net",
@@ -16,7 +16,7 @@ const transporter = createTransport({
   },
 });
 
-exports.getLogin = (req, res) => {
+export const getLogin = (req, res) => {
   res.render("auth/login", {
     title: "Login",
     errorMessage: req.flash("error"),
@@ -28,7 +28,7 @@ exports.getLogin = (req, res) => {
   });
 };
 
-exports.getSignup = (req, res) => {
+export const getSignup = (req, res) => {
   res.render("auth/signup", {
     title: "Signup",
     errorMessage: req.flash("error"),
@@ -41,14 +41,14 @@ exports.getSignup = (req, res) => {
   });
 };
 
-exports.getReset = (req, res) => {
+export const getReset = (req, res) => {
   res.render("auth/reset", {
     title: "Reset Password",
     errorMessage: req.flash("error"),
   });
 };
 
-exports.postSignup = (req, res) => {
+export const postSignup = (req, res) => {
   const { email, password, confirmPassword } = req.body;
   const errors = validationResult(req);
 
@@ -85,7 +85,7 @@ exports.postSignup = (req, res) => {
     .catch((err) => console.log(err));
 };
 
-exports.postLogin = (req, res) => {
+export const postLogin = (req, res) => {
   const { email, password } = req.body;
   const errors = validationResult(req);
 
@@ -132,7 +132,7 @@ exports.postLogin = (req, res) => {
     });
 };
 
-exports.postLogout = (req, res) => {
+export const postLogout = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error(err);
@@ -142,7 +142,7 @@ exports.postLogout = (req, res) => {
   });
 };
 
-exports.postReset = (req, res) => {
+export const postReset = (req, res) => {
   const email = req.body.email;
 
   randomBytes(32, (err, buffer) => {
@@ -187,7 +187,7 @@ exports.postReset = (req, res) => {
   });
 };
 
-exports.getNewPassword = (req, res) => {
+export const getNewPassword = (req, res) => {
   const token = req.params.token;
 
   User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
@@ -210,7 +210,7 @@ exports.getNewPassword = (req, res) => {
     });
 };
 
-exports.postNewPassword = (req, res) => {
+export const postNewPassword = (req, res) => {
   const { password, confirmPassword, userId, passwordToken } = req.body;
   if (!password || !confirmPassword) {
     req.flash("error", "All fields are required!");

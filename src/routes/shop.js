@@ -1,15 +1,22 @@
-const express = require("express");
+import express from "express";
 
-const shopController = require("../controllers/shop");
-const isAuth = require("../middleware/isAuth");
+import {
+  getCart,
+  getHome,
+  getOrders,
+  postCart,
+  postOrder,
+  postRemoveFromCart,
+} from "../controllers/shop.js";
+import isAuth from "../middleware/isAuth.js";
 
 const router = express.Router();
 
-router.get("/", shopController.getHome);
-router.get("/cart", isAuth, shopController.getCart);
-router.post("/cart", isAuth, shopController.postCart);
-router.post("/delete-from-cart", isAuth, shopController.postRemoveFromCart);
-router.post("/orders", isAuth, shopController.postOrder);
-router.get("/orders", isAuth, shopController.getOrders);
+router.get("/", getHome);
+router.get("/cart", isAuth, getCart);
+router.post("/cart", isAuth, postCart);
+router.post("/delete-from-cart", isAuth, postRemoveFromCart);
+router.post("/orders", isAuth, postOrder);
+router.get("/orders", isAuth, getOrders);
 
-module.exports = router;
+export default router;

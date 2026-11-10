@@ -1,11 +1,11 @@
-const { validationResult } = require("express-validator");
+import { validationResult } from "express-validator";
 
-const Product = require("../models/product");
+import Product from "../models/product.js";
 
-const { handleError } = require("../utils/errorHandler");
+import { handleError } from "../utils/errorHandler.js";
 
 // get the add product admin page
-exports.getAddProductPage = (req, res) => {
+export const getAddProductPage = (req, res) => {
   res.render("admin/form-product.ejs", {
     title: "Admin - Add Product",
     editing: false,
@@ -23,7 +23,7 @@ exports.getAddProductPage = (req, res) => {
 };
 
 // get the edit product admin page
-exports.getEditProductPage = (req, res) => {
+export const getEditProductPage = (req, res) => {
   const editQuery = req.query.edit;
   if (!editQuery) {
     return res.redirect("/");
@@ -53,7 +53,7 @@ exports.getEditProductPage = (req, res) => {
 };
 
 // get the products admin page
-exports.getAdminProductsPage = (req, res) => {
+export const getAdminProductsPage = (req, res) => {
   Product.find({ userId: req.session.userId })
     .then((products) => {
       res.render("admin/products.ejs", {
@@ -65,7 +65,7 @@ exports.getAdminProductsPage = (req, res) => {
 };
 
 // Post request to edit an existing product
-exports.postEditProduct = (req, res) => {
+export const postEditProduct = (req, res) => {
   const {
     productId,
     productName,
@@ -111,7 +111,7 @@ exports.postEditProduct = (req, res) => {
     .catch((err) => handleError(res, err));
 };
 
-exports.postDeleteProduct = (req, res) => {
+export const postDeleteProduct = (req, res) => {
   const productId = req.params.productId;
   Product.deleteOne({ _id: productId, userId: req.session.userId })
     .then(() => res.redirect("/admin/products"))
@@ -119,7 +119,7 @@ exports.postDeleteProduct = (req, res) => {
 };
 
 // add new product (POST)
-exports.postProducts = (req, res) => {
+export const postProducts = (req, res) => {
   const {
     productName,
     productQuantity,

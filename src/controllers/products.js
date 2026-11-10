@@ -1,9 +1,9 @@
-const Product = require("../models/product");
+import Product from "../models/product.js";
 
-const { handleError } = require("../utils/errorHandler");
+import { handleError } from "../utils/errorHandler.js";
 
 // get products page
-exports.getProductsPage = (req, res) => {
+export const getProductsPage = (req, res) => {
   Product.find()
     .then((products) => {
       res.render("shop/products-list.ejs", {
@@ -15,7 +15,7 @@ exports.getProductsPage = (req, res) => {
 };
 
 // get product details page
-exports.getProductDetailsById = (req, res) => {
+export const getProductDetailsById = (req, res) => {
   const productId = req.params.productId;
   Product.findById(productId)
     .then((product) => {

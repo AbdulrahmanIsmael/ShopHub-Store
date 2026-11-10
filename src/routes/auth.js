@@ -1,20 +1,30 @@
-const express = require("express");
+import express from "express";
 
-const authController = require("../controllers/auth");
+import {
+  getLogin,
+  getNewPassword,
+  getReset,
+  getSignup,
+  postLogin,
+  postSignup,
+  postLogout,
+  postNewPassword,
+  postReset,
+} from "../controllers/auth.js";
 
-const { signupValidator, loginValidator } = require("../validators/auth");
+import { signupValidator, loginValidator } from "../validators/auth.js";
 
 const router = express.Router();
 
-router.get("/login", authController.getLogin);
-router.get("/signup", authController.getSignup);
-router.get("/reset", authController.getReset);
-router.get("/reset/:token", authController.getNewPassword);
+router.get("/login", getLogin);
+router.get("/signup", getSignup);
+router.get("/reset", getReset);
+router.get("/reset/:token", getNewPassword);
 
-router.post("/login", loginValidator, authController.postLogin);
-router.post("/signup", signupValidator, authController.postSignup);
-router.post("/logout", authController.postLogout);
-router.post("/reset", authController.postReset);
-router.post("/new-password", authController.postNewPassword);
+router.post("/login", loginValidator, postLogin);
+router.post("/signup", signupValidator, postSignup);
+router.post("/logout", postLogout);
+router.post("/reset", postReset);
+router.post("/new-password", postNewPassword);
 
-module.exports = router;
+export default router;

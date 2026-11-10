@@ -1,8 +1,8 @@
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
-const User = require("../models/user");
+import User from "../models/user.js";
 
-const signupValidator = [
+export const signupValidator = [
   body("email", "Please enter a valid email address.")
     .trim()
     .normalizeEmail()
@@ -28,7 +28,7 @@ const signupValidator = [
     }),
 ];
 
-const loginValidator = [
+export const loginValidator = [
   body("email")
     .trim()
     .normalizeEmail()
@@ -43,8 +43,3 @@ const loginValidator = [
     .isAlphanumeric()
     .withMessage("Invalid password, please try again!"),
 ];
-
-module.exports = {
-  signupValidator,
-  loginValidator,
-};

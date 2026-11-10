@@ -1,35 +1,44 @@
-const { port, mongodbUri, sessionSecret } = require("./config/env");
+import { port, mongodbUri, sessionSecret } from "./config/env.js";
 
-const express = require("express");
-const path = require("path");
+import express from "express";
+import process from "process";
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
 
-const csrf = require("@dr.pogodin/csurf").default;
+import csrf from "@dr.pogodin/csurf";
 
-const session = require("express-session");
-const MongoDBSession = require("connect-mongodb-session")(session);
-const flash = require("connect-flash");
+import session from "express-session";
+import connectMongoDBSession from "connect-mongodb-session";
+import flash from "connect-flash";
 
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const User = require("./models/user");
+import User from "./models/user.js";
 
-const adminRouter = require("./routes/admin");
-const productsRouter = require("./routes/products");
-const shopRouter = require("./routes/shop");
-const authRouter = require("./routes/auth");
+import adminRouter from "./routes/admin.js";
+import productsRouter from "./routes/products.js";
+import shopRouter from "./routes/shop.js";
+import authRouter from "./routes/auth.js";
 
-const errorController = require("./controllers/error");
+import { getErrorPage } from "./controllers/error.js";
 
 const app = express();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const isRunDirectly = import.meta.url === pathToFileURL(process.argv[1]).href;
+
+const MongoDbSession = connectMongoDBSession(session);
+
 // initialize session store for MongoDB
-const store = new MongoDBSession({
+const store = new MongoDbSession({
   uri: mongodbUri,
   databaseName: "shop", // used in case db name not in the uri string
   collection: "sessions",
 });
 // getting csrf middleware for configuring csrf
-const csrfProtection = csrf();
+const csrfProtection = csrf.default ? csrf.default() : csrf();
 
 // EJS configuration
 app.set("view engine", "ejs");
@@ -72,7 +81,7 @@ app.use((req, res, next) => {
 });
 
 // production middleware - not running on local dev
-if (require.main !== module) {
+if (!isRunDirectly) {
   app.use((req, res, next) => {
     // connect to mongoose database
     mongoose
@@ -101,10 +110,10 @@ app.use(shopRouter);
 app.use(authRouter);
 
 // 404 handler
-app.use(errorController.getErrorPage);
+app.use(getErrorPage);
 
 // Local development only.
-if (require.main === module) {
+if (isRunDirectly) {
   mongoose
     .connect(mongodbUri, {
       dbName: "shop",
@@ -122,4 +131,4 @@ if (require.main === module) {
 }
 
 // Required for Vercel
-module.exports = app;
+export default app;
