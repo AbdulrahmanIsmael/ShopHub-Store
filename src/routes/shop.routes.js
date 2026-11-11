@@ -7,8 +7,8 @@ import {
   postCart,
   postOrder,
   postRemoveFromCart,
-} from "../controllers/shop.js";
-import isAuth from "../middleware/isAuth.js";
+} from "../controllers/shop.controller.js";
+import isAuth from "../middlewares/isAuth.middleware.js";
 
 const router = express.Router();
 

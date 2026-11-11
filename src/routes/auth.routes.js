@@ -10,9 +10,12 @@ import {
   postLogout,
   postNewPassword,
   postReset,
-} from "../controllers/auth.js";
+} from "../controllers/auth.controller.js";
 
-import { signupValidator, loginValidator } from "../validators/auth.js";
+import {
+  signupValidator,
+  loginValidator,
+} from "../validators/auth.validator.js";
 
 const router = express.Router();
 

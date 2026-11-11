@@ -13,14 +13,14 @@ import flash from "connect-flash";
 
 import mongoose from "mongoose";
 
-import User from "./models/user.js";
+import User from "./models/user.model.js";
 
-import adminRouter from "./routes/admin.js";
-import productsRouter from "./routes/products.js";
-import shopRouter from "./routes/shop.js";
-import authRouter from "./routes/auth.js";
+import adminRouter from "./routes/admin.routes.js";
+import productsRouter from "./routes/products.routes.js";
+import shopRouter from "./routes/shop.routes.js";
+import authRouter from "./routes/auth.routes.js";
 
-import { getErrorPage } from "./controllers/error.js";
+import { getErrorPage } from "./controllers/error.controller.js";
 
 const app = express();
 
@@ -64,36 +64,35 @@ app.use(csrfProtection);
 // initialize flash session
 app.use(flash());
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const userId = req.session.userId;
   if (!userId) {
     return next();
   }
-  User.findById(userId)
-    .then((user) => {
-      req.user = user;
-      return next();
-    })
-    .catch((err) => {
-      console.log("Error: ", err);
-      res.status(500).send("Internal Server Error!");
-    });
+
+  try {
+    const user = await User.findById(userId);
+    req.user = user;
+    return next();
+  } catch (err) {
+    console.log("Error: ", err);
+    res.status(500).send("Internal Server Error!");
+  }
 });
 
 // production middleware - not running on local dev
 if (!isRunDirectly) {
-  app.use((req, res, next) => {
-    // connect to mongoose database
-    mongoose
-      .connect(mongodbUri)
-      .then(() => {
-        console.log("Connected to MongoDB");
-        next();
-      })
-      .catch((err) => {
-        console.error("Failed to connect to MongoDB:", err);
-        res.status(500).send("Server error");
-      });
+  app.use(async (req, res, next) => {
+    try {
+      // connect to mongoose database
+      await mongoose.connect(mongodbUri);
+
+      console.log("Connected to MongoDB");
+      next();
+    } catch (err) {
+      console.error("Failed to connect to MongoDB:", err);
+      res.status(500).send("Server error");
+    }
   });
 }
 
@@ -114,20 +113,19 @@ app.use(getErrorPage);
 
 // Local development only.
 if (isRunDirectly) {
-  mongoose
-    .connect(mongodbUri, {
+  try {
+    await mongoose.connect(mongodbUri, {
       dbName: "shop",
-    })
-    .then(() => {
-      app.listen(port, "0.0.0.0", () => {
-        console.log(`Server is running on port ${port}`);
-        console.log(`http://localhost:${port}`);
-      });
-    })
-    .catch((err) => {
-      console.error("Failed to connect to MongoDB:", err);
-      process.exit(1);
     });
+
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server is running on port ${port}`);
+      console.log(`http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  }
 }
 
 // Required for Vercel

@@ -7,10 +7,10 @@ import {
   postEditProduct,
   postDeleteProduct,
   getEditProductPage,
-} from "../controllers/admin.js";
-import isAuth from "../middleware/isAuth.js";
+} from "../controllers/admin.controller.js";
+import isAuth from "../middlewares/isAuth.middleware.js";
 
-import { addProductValidator } from "../validators/admin.js";
+import { addProductValidator } from "../validators/admin.validator.js";
 
 const router = express.Router();
 
